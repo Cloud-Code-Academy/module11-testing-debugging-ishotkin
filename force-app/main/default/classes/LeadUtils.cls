@@ -13,9 +13,8 @@ The update will need to be passed the trigger.old variable as well as the trigge
 email address has changed. If so, it will add the lead to a new list that will be passed to the method in the utils 
 class to perform the check and do conversion if needed. --- This part is completed!
 
-The utils method will need to do a query and check that the size of the returned list is exactly 1. If it is larger 
-than 1 or equal to zero, it will exit the loop. Otherwise, autoconvert the lead and merge details onto the lead? or
-the existing contact?
+The utils method will need to do a query and check that the size of the returned list is exactly 1. Otherwise, 
+autoconvert the lead and merge details onto the lead? or the existing contact?
 
 I will need to have 2 tests. The insert one will need to look for contacts with the email address before the insert 
 is even done. And if the email matches 1 contact, add that email to a list. And then query the contacts for that
@@ -40,11 +39,11 @@ public with sharing class LeadUtils {
 		Map<String, Contact> emailToContactMap = new Map<String, Contact>();
 		for (Contact c : [SELECT Id, Email, AccountId FROM Contact WHERE Email IN :leadToEmailMap.values()]) {
 			if (!emailToContactMap.containsKey(c.Email)) {
-				emailToContactMap.put(c.Email, c);
+				emailToContactMap.put(c.Email, c); // First Match
 			} else {
 				// If we found another contact with the same email, we don't auto-convert.
 				// So we remove the email from the map.
-				leadToEmailMap.remove(c.Email);
+				emailToContactMap.remove(c.Email);
 			}
 		}
 

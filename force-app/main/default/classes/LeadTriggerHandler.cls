@@ -97,7 +97,7 @@ public with sharing class LeadTriggerHandler {
 	 * Criteria:
 	 * - Monitor the "Email" field on the Lead object for creation or updates.
 	 * - On Lead creation or email update, search the Contact object for records with the
-	 *   same email address.
+	 *   same email address, as long as Email is not null and Lead is not converted.
 	 * - If a single matching Contact is identified:
 	 *     - Auto-convert the Lead.
 	 *     - Merge the Lead details with the existing Contact, ensuring that crucial
@@ -107,31 +107,26 @@ public with sharing class LeadTriggerHandler {
 	 */
 	public static void handleLeadAutoConvertOnInsert(List<Lead> leads) {
 		// Create a list to hold the Leads that should be check for the autoconvert
-		List<Lead> leadsWithEmailUpdate = new List<Lead>();
+		List<Lead> leadsWithEmail = new List<Lead>();
 
 		// For each Lead, only send to the autoconvert method if Email is not null
 		for (Lead newLead : leads) {
 			if (newLead.Email != null) {
-				leadsWithEmailUpdate.add(newLead);
+				leadsWithEmail.add(newLead);
 			}
 		}
-		LeadUtils.autoConvertLeads(leadsWithEmailUpdate);
+		if (!leadsWithEmail.isEmpty()) {
+			LeadUtils.autoConvertLeads(leadsWithEmail);
+		}
 	}
 
-	public static void handleLeadAutoConvertOnUpdate(List<Lead> updatedleads, List<Lead> oldLeads) {
+	public static void handleLeadAutoConvertOnUpdate(List<Lead> updatedLeads, Map<Id, Lead> oldLeads) {
 		// Create a list to hold the Leads that should be check for the autoconvert
 		List<Lead> leadsWithEmailUpdate = new List<Lead>();
-		// Create a map to match the Lead Id's wih their old Email values
-		Map<Id,String> oldLeadToEmailMap = new Map<Id,String>();
 
-		// For each Lead, add them to a map with old Email values
-		for (Lead oldLead : oldLeads) {
-			oldLeadToEmailMap.put(oldLead.Id, oldLead.Email);
-		}
-
-		// For each Lead, if the Email is not the same as the old value, add the Lead to list to update
+		// For each Lead, if the Email is not the same as the old value and not null, add the Lead to list to update
 		for (Lead newLead : updatedleads) {
-			if ((newLead.Email == null || newLead.Email != oldLeadToEmailMap.get(newLead.Id)) && !newLead.IsConverted) {
+			if (newLead.Email != null && newLead.Email != oldLeads.get(newLead.Id).Email && !newLead.IsConverted) {
 				leadsWithEmailUpdate.add(newLead);
 			}
 		}

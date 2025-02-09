@@ -16,6 +16,7 @@ public with sharing class DataGenerator {
         // List to hold leads to be returned
         List<Lead> newLeads = new List<Lead>();
 
+        // Create lists of data to use in Lead generation
         List<String> leadTitles = new List<String>{null,
             'vp Sales','Company V.P.','vice President',
             'Team MGR','manage','head of department',
@@ -43,7 +44,7 @@ public with sharing class DataGenerator {
             'Website',null,'Website','Website','Phone Inquiry',
             'Website',null,null,'Other',null};
 
-        // Create 15 Leads and add to list
+        // Create 15 Leads and add each to the list
         for (Integer i=0; i<15; i++) {
             Lead loopLead = new Lead();
             loopLead.LastName = 'Lead' + (i + 1);
@@ -62,7 +63,41 @@ public with sharing class DataGenerator {
         return newLeads;
     }
 
-    private static contactGenerator() {
-        return null;
+    @TestVisible
+    private static List<Contact> contactGenerator() {
+        // Create an Account to use for the Contacts
+        Account testAccount =  new Account(Name = 'Test Account');
+        insert testAccount;
+        
+        // Create a list to hold the Contacts
+        List<Contact> newContacts = new List<Contact>();
+
+        // Create lists of data to use in Contact creation
+        List<String> contactEmails = new List<String>{null, 'lead2@gmail.com','lead2@gmail.com','lead3@gmail.com','contact4@gmail.com',
+            'lead2@gmail.com','lead6@gmail.com','lead7@gmail.com','lead8@gmail.com','lead11@gmail.com',null,'lead7@gmail.com'};
+
+        // Create 12 new Contacts and add them to the list
+        for (Integer i=0; i<12; i++) {
+            Contact newCon = new Contact();
+            newCon.LastName = 'Contact' + (i + 1);
+            newCon.Email = contactEmails[i];
+            newCon.Account = testAccount;
+            newContacts.add(newCon);
+        }
+
+        // Return the list of Contacts
+        return newContacts;
+    }
+
+    @TestVisible
+    private static List<Lead> leadUpdater(String newEmail, List<Lead> leads){
+        // Set the email address of the leads with no Email to that of the Contact
+        for (Lead l : leads) {
+            if (l.Email == null) {
+                l.Email = newEmail;
+            }
+        }
+        // Return the updated Leads
+        return leads;
     }
 }
