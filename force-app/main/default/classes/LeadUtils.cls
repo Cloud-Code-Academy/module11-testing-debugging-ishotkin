@@ -3,27 +3,6 @@
 * to provide functionality that would otherwise need to be written in multiple places
 */
 
-
-
-/*
-
-I am thinking that I will need to break the given function into 2, one for insert and one for update
-The insert will just call a method from the utils class to perform the check and do the conversion if needed.
-The update will need to be passed the trigger.old variable as well as the trigger.new. It will need to check if the
-email address has changed. If so, it will add the lead to a new list that will be passed to the method in the utils 
-class to perform the check and do conversion if needed. --- This part is completed!
-
-The utils method will need to do a query and check that the size of the returned list is exactly 1. Otherwise, 
-autoconvert the lead and merge details onto the lead? or the existing contact?
-
-I will need to have 2 tests. The insert one will need to look for contacts with the email address before the insert 
-is even done. And if the email matches 1 contact, add that email to a list. And then query the contacts for that
-email after the insert and make sure equals 2? Not sure if that would work. But then all the ones that were updated
-will need to have the description updated? I am super confused about this one... I will also have to do an update step
-which will have to be after the insert checks.
-
-*/
-
 public with sharing class LeadUtils {
     /*
     * The autoConvertLeads function checks if a lead should be autoconverted, and if so, handles the operation.
@@ -46,6 +25,7 @@ public with sharing class LeadUtils {
 				emailToContactMap.remove(c.Email);
 			}
 		}
+		system.debug(emailToContactMap);
 
 		// Step 3: Auto-convert leads
 		List<Database.LeadConvert> leadConverts = new List<Database.LeadConvert>();

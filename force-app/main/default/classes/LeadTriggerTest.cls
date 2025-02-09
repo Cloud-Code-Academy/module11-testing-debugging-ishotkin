@@ -152,6 +152,7 @@ public with sharing class LeadTriggerTest {
 		// Insert the Leads
 		test.startTest();
 		insert newLeads;
+		system.debug(newLeads);
 		test.stopTest();
 
 		// Query the created Contacts and Leads
